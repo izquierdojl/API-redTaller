@@ -12,7 +12,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/funciones/database.php'; // funciones de b
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 // Clave secreta para generar y validar los tokens
 $secret_key = getenv('SECRET_JWT_KEY');

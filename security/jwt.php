@@ -1,13 +1,11 @@
 <?php
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
 
 require 'vendor/autoload.php'; // Incluye autoload de Composer para JWT
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 $secret_key = getenv('SECRET_JWT_KEY');
 
@@ -29,7 +27,6 @@ try {
     echo json_encode(["error" => $e->getMessage()]);
     exit();
 }
-
 
 $response = [
     "mensaje" => "Clave secreta cargada",
