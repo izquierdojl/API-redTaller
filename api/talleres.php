@@ -14,6 +14,9 @@ $valid_users = [];
 
 $conDb = BD_conectar();
 
+// Obtener el parámetro nif si existe
+$nif_param = isset($_GET['nif']) ? $_GET['nif'] : null;
+
 $sql = "SELECT nif, password FROM cliente";
 $result = $conDb->query($sql);
 if ($result->num_rows > 0) {
@@ -39,20 +42,40 @@ $hashedPassword = hash('sha256', $password);
 
 if (!isset($valid_users[$user]) || $valid_users[$user] !== $hashedPassword) {
     http_response_code(403);
-    echo json_encode(['error' => 'Credenciales inv�lidas']);
+    echo json_encode(['error' => 'Credenciales inválidas']);
     exit();
 }
 
+
 $conDb = BD_conectar();
 
-$sql = "SELECT nif, nombre, domicilio, cp, pob, pro, tel, email, movil, id FROM taller";
-$result = $conDb->query($sql);
-$talleres = [];
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $talleres[] = $row;
+if ($nif_param) {
+    $sql = "SELECT nif, nombre, domicilio, cp, pob, pro, tel, email, movil, id FROM taller WHERE nif = ?";
+    $stmt = $conDb->prepare($sql);
+    $stmt->bind_param("s", $nif_param); //"s" para string
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $talleres = [];
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $talleres[] = $row;
+        }
+    } else {
+        http_response_code(404);
+        echo json_encode(['error' => 'Taller no encontrado']);
+        exit();
+    }
+} else {
+    $sql = "SELECT nif, nombre, domicilio, cp, pob, pro, tel, email, movil, id FROM taller";
+    $result = $conDb->query($sql);
+    $talleres = [];
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $talleres[] = $row;
+        }
     }
 }
+
 $conDb->close();
 
 
