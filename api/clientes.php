@@ -37,9 +37,8 @@ if (empty($auth_header) || empty($token)) {
 }
 
 list($user, $password) = explode(':', base64_decode(substr($auth_header, 6)));
-$hashedPassword = hash('sha256', $password);
 
-if (!isset($valid_users[$user]) || $valid_users[$user] !== $hashedPassword) {
+if (!isset($valid_users[$user]) || $valid_users[$user] !== $password) {
     http_response_code(403);
     echo json_encode(['error' => 'Credenciales inválidas']);
     exit();

@@ -16,6 +16,7 @@ $conDb = BD_conectar();
 
 // Obtener el parámetro nif si existe
 $nif_param = isset($_GET['nif']) ? $_GET['nif'] : null;
+$search_param = isset($_GET['search']) ? $_GET['search'] : null;
 
 $sql = "SELECT nif, password FROM cliente";
 $result = $conDb->query($sql);
@@ -38,14 +39,12 @@ if (empty($auth_header) || empty($token)) {
 }
 
 list($user, $password) = explode(':', base64_decode(substr($auth_header, 6)));
-$hashedPassword = hash('sha256', $password);
 
-if (!isset($valid_users[$user]) || $valid_users[$user] !== $hashedPassword) {
+if (!isset($valid_users[$user]) || $valid_users[$user] !== $password) {
     http_response_code(403);
     echo json_encode(['error' => 'Credenciales inválidas']);
     exit();
 }
-
 
 $conDb = BD_conectar();
 
@@ -65,8 +64,30 @@ if ($nif_param) {
         echo json_encode(['error' => 'Taller no encontrado']);
         exit();
     }
-} else {
-    $sql = "SELECT nif, nombre, domicilio, cp, pob, pro, tel, email, movil, id FROM taller";
+} elseif($search_param)
+{
+    $search_param = '%' . $search_param . '%';  
+    $sql = "SELECT nif, nombre, domicilio, cp, pob, pro, tel, email, movil, id 
+            FROM taller 
+            WHERE 
+            (nif LIKE ? OR 
+             nombre LIKE ? OR 
+             domicilio LIKE ? OR 
+             pob LIKE ? OR 
+             pro LIKE ?) ORDER BY nombre";
+     $stmt = $conDb->prepare($sql);
+     $stmt->bind_param("sssss", $search_param, $search_param, $search_param, $search_param, $search_param);
+     $stmt->execute();     
+     $result = $stmt->get_result();
+     $talleres = [];
+     if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+           $talleres[] = $row;
+        }
+    }
+}else
+{
+    $sql = "SELECT nif, nombre, domicilio, cp, pob, pro, tel, email, movil, id FROM taller ORDER BY nombre";
     $result = $conDb->query($sql);
     $talleres = [];
     if ($result->num_rows > 0) {
@@ -77,7 +98,6 @@ if ($nif_param) {
 }
 
 $conDb->close();
-
 
 echo json_encode($talleres);
 ?>
