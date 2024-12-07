@@ -1,5 +1,4 @@
 <?php
-
 function BD_conectar()
 {
     $servername = "localhost";
@@ -15,5 +14,4 @@ function BD_conectar()
     }
     return $conn;
 }
-
 ?>

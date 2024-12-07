@@ -1,48 +1,15 @@
 <?php
 
-require $_SERVER['DOCUMENT_ROOT'] . '/security/vendor/autoload.php'; 
 require $_SERVER['DOCUMENT_ROOT'] . '/funciones/database.php'; 
-
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+require $_SERVER['DOCUMENT_ROOT'] . '/funciones/funciones.php'; 
 
 header('Content-Type: application/json; charset=utf-8');
 
-$valid_users = [];
+$headers = getallheaders();
+$nif_access = valid_access($headers);
 
-$conDb = BD_conectar();
-
-// Obtener el parámetro nif si existe
 $nif_param = isset($_GET['nif']) ? $_GET['nif'] : null;
 $search_param = isset($_GET['search']) ? $_GET['search'] : null;
-
-$sql = "SELECT nif, password FROM cliente";
-$result = $conDb->query($sql);
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $valid_users[$row['nif']] = $row['password'];
-    }
-}
-
-$conDb->close();
-
-$headers = getallheaders();
-$auth_header = isset($headers['Authorization']) ? $headers['Authorization'] : '';
-$token = isset($headers['Authorization']) ? str_replace('Bearer ', '', $headers['Authorization']) : '';
-
-if (empty($auth_header) || empty($token)) {
-    http_response_code(403);
-    echo json_encode(['error' => 'Credenciales o token no proporcionados']);
-    exit();
-}
-
-list($user, $password) = explode(':', base64_decode(substr($auth_header, 6)));
-
-if (!isset($valid_users[$user]) || $valid_users[$user] !== $password) {
-    http_response_code(403);
-    echo json_encode(['error' => 'Credenciales inválidas']);
-    exit();
-}
 
 $conDb = BD_conectar();
 

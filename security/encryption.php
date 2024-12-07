@@ -1,20 +1,13 @@
 <?php
 
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
-//ini_set('log_errors', 1); 
-//ini_set('error_log', '/var/www/redtaller.jlizquierdo.com/error.log'); // Ruta al archivo de log
-
 require 'vendor/autoload.php'; // autoload de Composer para JWT
 require $_SERVER['DOCUMENT_ROOT'] . '/funciones/database.php'; // funciones de base de datos
-
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Clave secreta para generar y validar los tokens
 $secret_key = getenv('SECRET_JWT_KEY');
 
 $valid_users = [];
