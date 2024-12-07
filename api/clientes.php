@@ -8,8 +8,6 @@ use Firebase\JWT\Key;
 
 header('Content-Type: application/json; charset=utf-8');
 
-$secret_key = getenv('SECRET_JWT_KEY');
-
 $valid_users = [];
 
 $conDb = BD_conectar();
