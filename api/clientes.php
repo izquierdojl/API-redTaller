@@ -11,10 +11,10 @@ $nif_access = valid_access($headers);
 
 $conDb = BD_conectar();
 
-if ($nif_param) { // un nif en concreto
+if ($nif_access) { // un nif en concreto
     $sql = "SELECT nif, nombre, domicilio, cp, pob, pro, tel, email, movil, id FROM cliente WHERE nif = ?";
     $stmt = $conDb->prepare($sql);
-    $stmt->bind_param("s", $nif_param); // string
+    $stmt->bind_param("s", $nif_access); // string
     $stmt->execute();
     $result = $stmt->get_result();
     $clientes = [];
@@ -27,7 +27,7 @@ if ($nif_param) { // un nif en concreto
         echo json_encode(['error' => 'Cliente no encontrado']);
         exit();
     }
-} else { // todos los clientes
+} else { // todos los clientes --> realmente no debería usarse
     $sql = "SELECT nif, nombre, domicilio, cp, pob, pro, tel, email, movil, id FROM cliente";
     $result = $conDb->query($sql);
     $clientes = [];
